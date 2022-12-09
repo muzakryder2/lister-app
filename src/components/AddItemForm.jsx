@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addItem, reset, asyncAddItem } from "../features/items/itemsSlice";
+import { addItem } from "../features/items/itemsSlice";
 import { MdOutlineAddBox } from "react-icons/md";
 
 function AddItemForm() {
@@ -10,8 +10,7 @@ function AddItemForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(asyncAddItem(text));
-    dispatch(reset());
+    dispatch(addItem(text));
     setText("");
   };
 

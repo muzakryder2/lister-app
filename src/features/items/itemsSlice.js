@@ -1,29 +1,39 @@
 import { createSlice, createAsyncThunk, nanoid } from "@reduxjs/toolkit";
 
 const initialState = {
-  items: [
-    { id: 1, text: "Item 1", isChecked: false },
-    { id: 2, text: "Item 2", isChecked: false },
-    { id: 3, text: "Item 3", isChecked: true },
-    { id: 4, text: "Item 4", isChecked: true },
-    { id: 5, text: "Item 5", isChecked: false },
-  ],
+  items: JSON.parse(localStorage.getItem("items")) || [],
   isLoading: false,
   isSuccess: false,
   isError: false,
   message: "",
 };
 
-export const asyncAddItem = createAsyncThunk(
-  "items/asyncAddItem",
-  async (text) => {
+export const addItem = createAsyncThunk("items/addItem", async (text) => {
+  try {
+    const newItem = {
+      id: nanoid(),
+      text,
+      isChecked: false,
+    };
+    return newItem;
+  } catch (error) {
+    return error;
+  }
+});
+
+export const checkItem = createAsyncThunk("items/checkItem", async (itemId) => {
+  try {
+    return itemId;
+  } catch (error) {
+    return error;
+  }
+});
+
+export const deleteItem = createAsyncThunk(
+  "items/deleteItem",
+  async (itemId) => {
     try {
-      const newItem = {
-        id: nanoid(),
-        text,
-        isChecked: false,
-      };
-      return newItem;
+      return itemId;
     } catch (error) {
       return error;
     }
@@ -40,26 +50,51 @@ const itemsSlice = createSlice({
       state.isError = false;
       state.message = "";
     },
-    addItem: (state, action) => {
-      const newItem = {
-        id: nanoid(),
-        text: action.payload,
-        isChecked: false,
-      };
-      state.items.unshift(newItem);
-    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(asyncAddItem.pending, (state) => {
+      .addCase(addItem.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(asyncAddItem.fulfilled, (state, action) => {
+      .addCase(addItem.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.items.unshift(action.payload);
+        localStorage.setItem("items", JSON.stringify(state.items));
       })
-      .addCase(asyncAddItem.rejected, (state, action) => {
+      .addCase(addItem.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(deleteItem.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteItem.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.items = state.items.filter((item) => item.id !== action.payload);
+        localStorage.setItem("items", JSON.stringify(state.items));
+      })
+      .addCase(deleteItem.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(checkItem.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkItem.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.items = state.items.map((item) =>
+          item.id === action.payload
+            ? { ...item, isChecked: !item.isChecked }
+            : item
+        );
+        localStorage.setItem("items", JSON.stringify(state.items));
+      })
+      .addCase(checkItem.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -67,5 +102,5 @@ const itemsSlice = createSlice({
   },
 });
 
-export const { reset, addItem } = itemsSlice.actions;
+export const { reset } = itemsSlice.actions;
 export default itemsSlice.reducer;
