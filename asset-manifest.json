@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/lister-app/static/css/main.14ae727a.css",
+    "main.js": "/lister-app/static/js/main.88164b2e.js",
+    "index.html": "/lister-app/index.html",
+    "main.14ae727a.css.map": "/lister-app/static/css/main.14ae727a.css.map",
+    "main.88164b2e.js.map": "/lister-app/static/js/main.88164b2e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.14ae727a.css",
+    "static/js/main.88164b2e.js"
+  ]
+}
